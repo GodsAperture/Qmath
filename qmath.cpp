@@ -5,6 +5,8 @@
 
 namespace qmath {
 
+    ////Special math functions.
+
     double abs(const double in){
         union doutoint{
             double asDou;
@@ -35,6 +37,16 @@ namespace qmath {
         return val.asFlo;
     }
 
+    long long abs(const long int in){
+        union doutoint {
+            double asDou;
+            long long asInt;
+        };
+        doutoint val = {(double) in};
+        val.asInt &= 0x7fffffffffffffff;
+        return val.asDou;
+    }
+
     double frexp(const double in1, int* in2) {
         *in2 = ((0x7ff0000000000000 & (*(long long *) &in1)) >> 52) - 1023;
         return 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in1)) + 1;
@@ -54,6 +66,8 @@ namespace qmath {
         *in2 = ((0x7F800000 & (*(long *) &in1)) >> 23) - 127;
         return 1.192092896e-7f * (0x000fffff & (*(long *) &in1)) + 1;
     }//Returns the mantissa and the exponent of the given float.
+
+    ////Transcendental math functions.
 
 //~25% faster than std::sin
     double sin(const double in) {
@@ -374,7 +388,7 @@ namespace qmath {
     }//Returns Euler's number raised to the double power, accurate to a around of 8 decimal places.
 
 //~65% faster than std::exp
-    float fexp(const float in){
+    float exp(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
         const float base4 = base2 * base2;
@@ -427,7 +441,7 @@ namespace qmath {
     }//Returns the hyperbolic Cosine of the given double, accurate to around 8 decimal places.
 
 //~90% faster than std::cosh
-    float fcosh(const float in){
+    float cosh(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
         const float base4 = base2 * base2;
@@ -481,7 +495,7 @@ namespace qmath {
     }//Returns the hyperbolic Secant of the given double, accurate to around 8 decimal places.
 
 //~90% faster than std::sinh
-    float fsech(const float in){
+    float sech(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
         const float base4 = base2 * base2;
@@ -537,7 +551,7 @@ namespace qmath {
     }//Returns the hyperbolic Sine of the given double, accurate to around 8 decimal places.
 
 //~90% faster than std::sinh
-    float fsinh(const float in){
+    float sinh(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
         const float base4 = base2 * base2;
@@ -591,7 +605,7 @@ namespace qmath {
     }//Returns the hyperbolic Cosecant of the given double, accurate to around 8 decimal places.
 
 //~90% faster than std::sinh
-    float fcsch(const float in){
+    float csch(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
         const float base4 = base2 * base2;

@@ -5,17 +5,55 @@
 
 namespace qmath {
 
-//~30% faster than std::frexp
+    double abs(const double in){
+        union doutoint{
+            double asDou;
+            long long asInt;
+        };
+        doutoint val = {in};
+        val.asInt &= 0x7fffffffffffffff;
+        return val.asDou;
+    }//Returns the absolute value of the given double.
+
+    float abs(const float in){
+        union flotoint{
+            float asFlo;
+            long asInt;
+        };
+        flotoint val = {in};
+        val.asInt &= 0x7fffffff;
+        return val.asFlo;
+    }
+
+    int abs(const int in) {
+        union flotoint {
+            float asFlo;
+            int asInt;
+        };
+        flotoint val = {(float) in};
+        val.asInt &= 0x7fffffff;
+        return val.asFlo;
+    }
+
     double frexp(const double in1, int* in2) {
         *in2 = ((0x7ff0000000000000 & (*(long long *) &in1)) >> 52) - 1023;
         return 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in1)) + 1;
     }//Returns the mantissa and exponent of the given double.
 
-//
+    double frexp(const double in1, short* in2) {
+        *in2 = ((0x7ff0000000000000 & (*(long long *) &in1)) >> 52) - 1023;
+        return 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in1)) + 1;
+    }//Returns the mantissa and exponent of the given double.
+
     float frexp(const float in1, int* in2) {
-        *in2 = ((0x7F800000 & (*(long *) &in1)) >> 52) - 127;
+        *in2 = ((0x7F800000 & (*(long *) &in1)) >> 23) - 127;
         return 1.192092896e-7f * (0x000fffff & (*(long *) &in1)) + 1;
         }//Returns the mantissa and the exponent of the given float.
+
+    float frexp(const float in1, short* in2) {
+        *in2 = ((0x7F800000 & (*(long *) &in1)) >> 23) - 127;
+        return 1.192092896e-7f * (0x000fffff & (*(long *) &in1)) + 1;
+    }//Returns the mantissa and the exponent of the given float.
 
 //~25% faster than std::sin
     double sin(const double in) {
@@ -156,8 +194,8 @@ namespace qmath {
                (tanang3 * tanang2 * tanang1 - 35 * tanang3 * tanang2 + 273 * tanang3 * tanang1 - 715 * tanang3 + 715 * tanang2 * tanang1 - 273 * tanang2 + 35 * tanang1 - 1) / (tanang3 * tanang3 - 120 * tanang3 * tanang2 * tanang1 + 1820 * tanang3 * tanang2 - 8008 * tanang3 * tanang1 + 12870 * tanang3 - 8008 * tanang2 * tanang1 + 1820 * tanang2 - 120 * tanang1 +1);
     }//Returns the Tangent of the given double, accurate to around 10 decimal places.
 
-//
-    float ftan(const float in){
+//~35% faster than std::tan
+    float tan(const float in){
         const float ang = -0.0625f * in + 0.19634954084936208f * ((int) (0.31830988618379067f * (in + 1.5707963267948966f)));
         const float ang1 = ang * ang;
         const float ang2 = ang1 * ang1;
@@ -185,7 +223,7 @@ namespace qmath {
         return 8 * tanang * (tanang2 * tanang1 - 7 * tanang2 + 7 * tanang1 - 1) / (tanang2 * tanang2 - 28 * tanang2 * tanang1 + 70 * tanang2 - 28 * tanang1 + 1);
     }//Quickly returns the Tangent of the given double, accuracy depends on how near a pole the float is.
 
-//~25% faster than std::cot
+//~25% faster than std::tan
     double cot(const double in) {
         const double ang =
                 -0.0625 * in + 0.19634954084936208 * ((int) (0.31830988618379067 * (in + 1.5707963267948966)));
@@ -208,7 +246,7 @@ namespace qmath {
                        715 * tanang2 * tanang1 - 273 * tanang2 + 35 * tanang1 - 1));
     }//Returns the Cotangent of the given double, accurate to around 10 decimal places.
 
-//
+//~35% faster than std::tan
     float fcot(const float in){
         const float ang = -0.0625f * in + 0.19634954084936208f * ((int) (0.31830988618379067f * (in + 1.5707963267948966f)));
         const float ang1 = ang * ang;
@@ -335,7 +373,7 @@ namespace qmath {
         return val1 * val1 * val2 * val2 * derp.asDou;
     }//Returns Euler's number raised to the double power, accurate to a around of 8 decimal places.
 
-//
+//~65% faster than std::exp
     float fexp(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
@@ -388,7 +426,7 @@ namespace qmath {
         return 0.5 * final + 0.5 / final;
     }//Returns the hyperbolic Cosine of the given double, accurate to around 8 decimal places.
 
-//
+//~90% faster than std::cosh
     float fcosh(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
@@ -415,7 +453,7 @@ namespace qmath {
         return 0.5f * final + 0.5f / final;
     }//Returns the hyperbolic Cosine of the given float, accurate to around 6 decimal places.
 
-//The standard library doesn't contain the hyperbolic secant function
+//~90% faster than std::sinh
     double sech(const double in){
         const double base1 = (in - (int) in);
         const double base2 = base1 * base1;
@@ -442,7 +480,7 @@ namespace qmath {
         return 2 * final / (final * final + 1);
     }//Returns the hyperbolic Secant of the given double, accurate to around 8 decimal places.
 
-//The standard library doesn't contain the hyperbolic secant function.
+//~90% faster than std::sinh
     float fsech(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
@@ -498,7 +536,7 @@ namespace qmath {
         return 0.5 * final - 0.5 / final;
     }//Returns the hyperbolic Sine of the given double, accurate to around 8 decimal places.
 
-//
+//~90% faster than std::sinh
     float fsinh(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
@@ -525,7 +563,7 @@ namespace qmath {
         return 0.5f * final - 0.5f / final;
     }//Returns the hyperbolic Sine of the given float, accurate to around 6 decimal places.
 
-//The standard library doesn't contain the hyperbolic cosecant function.
+//~90% faster than std::sinh
     double csch(const double in){
         const double base1 = (in - (int) in);
         const double base2 = base1 * base1;
@@ -552,7 +590,7 @@ namespace qmath {
         return 2 * final / (final * final - 1);
     }//Returns the hyperbolic Cosecant of the given double, accurate to around 8 decimal places.
 
-//The standard library doesn't contain the hyperbolic cosecant function.
+//~90% faster than std::sinh
     float fcsch(const float in){
         const float base1 = (in - (int) in);
         const float base2 = base1 * base1;
@@ -603,7 +641,7 @@ namespace qmath {
 
         const double final = val1 * val1 * val2 * val2 * derp.asDou;
 
-        return (final - 1 / final) / (final + 1 / final);
+        return (final * final - 1) / (final * final + 1);
     }
 
 ////~10% slower, rework

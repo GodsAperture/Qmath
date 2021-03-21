@@ -4,8 +4,17 @@
 //Discord Computer Science server: https://discord.gg/Uv5eErc
 
 namespace qmath {
+    double QMATHDELTA = 0.01;
+    static const double Pi = 3.1415926535897932;
+    static const double E = 2.7182818284590452;
 
-    ////Special math functions.
+    ////SPECIAL MATH FUNCTIONS////
+
+//    int sign(auto in){
+//        return in < 0 ? -1 : 1;
+//    }
+
+
 
     double abs(const double in){
         union doutoint{
@@ -67,7 +76,7 @@ namespace qmath {
         return 1.192092896e-7f * (0x000fffff & (*(long *) &in1)) + 1;
     }//Returns the mantissa and the exponent of the given float.
 
-    ////Transcendental math functions.
+    ////TRANSCENDENTAL MATH FUNCTIONS////
 
 //~25% faster than std::sin
     double sin(const double in) {
@@ -149,7 +158,7 @@ namespace qmath {
     }//Returns the Cosine of the given double, accurate to around 12 decimal places.
 
 //~45% faster than std::cos
-    float cos(const float in){
+    float cos(const float in) {
         const float ang = 0.125f * in - 0.78539816339744831f * ((int) (0.15915494309189534f * in + 0.39269908169872415f));
 
         const float ang2 = ang * ang; //ang^2
@@ -300,7 +309,7 @@ namespace qmath {
         const double base4 = base2 * base2;
         const double base8 = base4 * base4;
 
-        return exp * 0.69314718055994531 + 0.25 * (0.40546510810816438 - 0.66666666666666667 * base1 - 0.22222222222222222 * base2 - 0.098765432098765432 * base2 * base1 - 0.049382716049382716 * base4 - 0.026337448559670782 * base4 * base1 - 0.014631915866483768 * base4 * base2 - 0.0083610947808478673 * base4 * base2 * base1 - 0.0048773052888279226 * base8 - 0.0028902549859721023 * base8 * base1 - 0.0017341529915832614 * base8 * base2 - 0.0010510018130807645 * base8 * base2 * base1 - 0.00064227888577157828 * base8 * base4 - 0.00039524854509020202 * base8 * base4 * base1 - 0.00024467767077012506 * base8 * base4 * base2);
+        return exp * 0.69314718055994531 + 0.40546510810816438 - 0.66666666666666667 * base1 - 0.22222222222222222 * base2 - 0.098765432098765432 * base2 * base1 - 0.049382716049382716 * base4 - 0.026337448559670782 * base4 * base1 - 0.014631915866483768 * base4 * base2 - 0.0083610947808478673 * base4 * base2 * base1 - 0.0048773052888279226 * base8 - 0.0028902549859721023 * base8 * base1 - 0.0017341529915832614 * base8 * base2 - 0.0010510018130807645 * base8 * base2 * base1 - 0.00064227888577157828 * base8 * base4 - 0.00039524854509020202 * base8 * base4 * base1 - 0.00024467767077012506 * base8 * base4 * base2;
     }//Returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
 
 ////With the current logarithm definition, there will not be a float log.
@@ -659,17 +668,17 @@ namespace qmath {
     }
 
 ////~10% slower, rework
-    double coth(const double in){
+    double coth(const double in) {
         const double base1 = (in - (int) in);
         const double base2 = base1 * base1;
         const double base4 = base2 * base2;
 
-        union doutoint{
+        union doutoint {
             long long asInt;
             double asDou;
         };
 
-        const long long int whoexp = ((int) (1.4426950408889634 * ((int) in)) + 1023) ;
+        const long long int whoexp = ((int) (1.4426950408889634 * ((int) in)) + 1023);
         doutoint derp = {whoexp};
         derp.asInt = whoexp << 52;
 
@@ -677,11 +686,76 @@ namespace qmath {
         const double decexp2 = decexp1 * decexp1;
         const double decexp4 = decexp2 * decexp2;
 
-        const double val1 = 1 + 0.5 * base1 + 0.125 * base2 + 0.020833333333333333 * base2 * base1 + 0.0026041666666666667 * base4 + 0.00026041666666666667 * base4 * base1 + 0.000021701388888888889 * base4 * base2 + 1.5500992063492063e-6 * base4 * base2 * base1 + 9.6881200396825397e-8 * base4 * base4;
-        const double val2 = 1 + 0.34657359027997265 * decexp1 + 0.060056626739775178 * decexp2 + 0.0069380135831026975 * decexp2 * decexp1 + 0.00060113306922677982 * decexp4 + 0.000041667369207588886 * decexp4 * decexp1 + 2.4068016239658766e-6 * decexp4 * decexp2 + 1.1916198284421750e-7 * decexp4 * decexp2 * decexp1 + 5.1622995274001209e-9 * decexp4 * decexp4;
+        const double val1 =
+                1 + 0.5 * base1 + 0.125 * base2 + 0.020833333333333333 * base2 * base1 + 0.0026041666666666667 * base4 +
+                0.00026041666666666667 * base4 * base1 + 0.000021701388888888889 * base4 * base2 +
+                1.5500992063492063e-6 * base4 * base2 * base1 + 9.6881200396825397e-8 * base4 * base4;
+        const double val2 = 1 + 0.34657359027997265 * decexp1 + 0.060056626739775178 * decexp2 +
+                            0.0069380135831026975 * decexp2 * decexp1 + 0.00060113306922677982 * decexp4 +
+                            0.000041667369207588886 * decexp4 * decexp1 + 2.4068016239658766e-6 * decexp4 * decexp2 +
+                            1.1916198284421750e-7 * decexp4 * decexp2 * decexp1 +
+                            5.1622995274001209e-9 * decexp4 * decexp4;
 
         const double final = val1 * val1 * val2 * val2 * derp.asDou;
 
         return (final * final + 1) / (final * final + 1);
     }
-};
+
+    ////CALCULUS FUNCTIONS////
+
+    double nint(double(*fun)(double), double* var, double low, double up){
+        double sum = 0;
+        int i;
+        int length = (up - low) / QMATHDELTA;
+
+        *var = low;
+
+        sum += 0.31111111111111111 * fun(*var);
+        sum += 1.42222222222222222 * fun(*var + QMATHDELTA);
+        sum += 0.53333333333333333 * fun(*var + 2 * QMATHDELTA);
+        sum += 1.42222222222222222 * fun(*var + 3 * QMATHDELTA);
+        sum += 0.31111111111111111 * fun(*var + 4 * QMATHDELTA);
+
+        for(i = 4; i < length; i+= 4){
+            sum += 0.31111111111111111 * fun(*var + i * QMATHDELTA);
+            sum += 1.42222222222222222 * fun(*var + (i + 1) * QMATHDELTA);
+            sum += 0.53333333333333333 * fun(*var + (i + 2) * QMATHDELTA);
+            sum += 1.42222222222222222 * fun(*var + (i + 3) * QMATHDELTA);
+            sum += 0.31111111111111111 * fun(*var + (i + 4) * QMATHDELTA);
+        }
+        return QMATHDELTA * sum;
+    }
+
+    float nint(float(*fun)(float), float* var, float low, float up){
+        float sum = 0;
+        int i;
+        int length = (up - low) / QMATHDELTA;
+
+        *var = low;
+
+        sum += 0.31111111f * fun(*var);
+        sum += 1.42222222f * fun(*var + QMATHDELTA);
+        sum += 0.53333333f * fun(*var + 2 * QMATHDELTA);
+        sum += 1.42222222f * fun(*var + 3 * QMATHDELTA);
+        sum += 0.31111111f * fun(*var + 4 * QMATHDELTA);
+
+        for(i = 4; i < length; i+= 4){
+            sum += 0.31111111f * fun(*var + i * QMATHDELTA);
+            sum += 1.42222222f * fun(*var + (i + 1) * QMATHDELTA);
+            sum += 0.53333333f * fun(*var + (i + 2) * QMATHDELTA);
+            sum += 1.42222222f * fun(*var + (i + 3) * QMATHDELTA);
+            sum += 0.31111111f * fun(*var + (i + 4) * QMATHDELTA);
+        }
+        return QMATHDELTA * sum;
+    }
+
+    float der(float(*fun)(float), float* var, float point){
+        *var = point;
+        return (0.08333333f * fun(*var - 2.0f * QMATHDELTA) - 0.6666667f * fun(*var - QMATHDELTA) + 0.6666667f * fun(*var + QMATHDELTA) - 0.08333333f * fun(*var + 2.0f * QMATHDELTA)) / QMATHDELTA;
+    }
+
+    double der(double(*fun)(double), double* var, double point){
+        *var = point;
+        return (0.083333333333333333 * fun(*var - 2 * QMATHDELTA) - 0.66666666666666667 * fun(*var - QMATHDELTA) + 0.66666666666666667 * fun(*var + QMATHDELTA) - 0.083333333333333333 * fun(*var + 2 * QMATHDELTA)) / QMATHDELTA;
+    }
+}

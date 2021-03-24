@@ -1,15 +1,18 @@
+//Mathematics algorithms: Joshua Champion.
+//Computer science algorithms: Andrew Rubenstein.
+//Contact on Discord: GodsAperture#8507
+//Discord Computer Science server: https://discord.gg/Uv5eErc
+
 namespace qmath {
-    double QMATHDELTA = 0.001;
+    double QMATHDELTA;
     static const double Pi = 3.1415926535897932;
-    static const double E = 2.7182818284590452;
+    static const double E  = 2.7182818284590452;
 
     ////SPECIAL MATH FUNCTIONS////
 
 //    int sign(auto in){
 //        return in < 0 ? -1 : 1;
 //    }
-
-
 
     double abs(const double in){
         union doutoint{
@@ -71,7 +74,7 @@ namespace qmath {
         return 1.192092896e-7f * (0x000fffff & (*(long *) &in1)) + 1;
     }//Returns the mantissa and the exponent of the given float.
 
-    ////TRANSCENDENTAL MATH FUNCTIONS////
+    ////TRIGONOMETRIC MATH FUNCTIONS////
 
 //~25% faster than std::sin
     double sin(const double in) {
@@ -294,6 +297,8 @@ namespace qmath {
         return 0.125 * (tanang2 * tanang2 - 28 * tanang2 * tanang1 + 70 * tanang2 - 28 * tanang1 + 1) /
                (tanang * (tanang2 * tanang1 - 7 * tanang2 + 7 * tanang1 - 1));
     }//Quickly returns the Cotangent of the given double, accurate to a minimum of 7 decimal places.
+
+    ////EXPONENTIALLY BASED FUNCTIONS////
 
 //~20% faster than std::log
     double log(const double in) {
@@ -696,27 +701,76 @@ namespace qmath {
         return (final * final + 1) / (final * final + 1);
     }
 
-    ////CALCULUS FUNCTIONS////
+    ////UNIVARIATE CALCULUS FUNCTIONS////
+
+////Attempted implementation of Gaussian Quadrature, however it doesn't seem to converge faster than nint in various cases.
+//    double Nnint(double(*fun)(double), double* var, double low, double up){
+//        double sum = 0;
+//        const int length =  (up - low) / QMATHDELTA - 1;
+//        const double diff = up - low - (length + 1) * QMATHDELTA;
+//
+//        *var = low;
+//
+//        for(int i = 1; i < length; i+= 1){
+//            sum += 0.34785484513745386 / 2 * fun(*var + (i - 0.86113631159405258 / 2) * QMATHDELTA);
+//            sum += 0.65214515486254614 / 2 * fun(*var + (i - 0.33998104358485626 / 2) * QMATHDELTA);
+//            sum += 0.65214515486254614 / 2 * fun(*var + (i + 0.33998104358485626 / 2) * QMATHDELTA);
+//            sum += 0.34785484513745386 / 2 * fun(*var + (i + 0.86113631159405258 / 2) * QMATHDELTA);
+//        }
+//
+//        *var = up;
+//
+//        return QMATHDELTA * sum + diff * (0.125 * fun(*var - diff) + 0.375 * fun(*var - 0.6666666666666667 * diff) + 0.375 * fun(*var - 0.3333333333333333 * diff) + 0.125 * fun(*var));
+//    }
+
+////Attempted an even more upscaled version of Gaussian quadrature with disappointing results, I'll come back to this one day.
+//    double Nnint(double(*fun)(double), double* var, double low, double up){
+//        double sum = 0;
+//        const int length =  (up - low) / QMATHDELTA - 1;
+//        const double diff = up - low - (length + 1) * QMATHDELTA;
+//
+//        *var = low;
+//
+//        for(int i = 1; i < length; i+= 1){
+//            sum += 0.066671344308688 / 2 * fun(*var + (i - 0.973906528517171 / 2) * QMATHDELTA);
+//            sum += 0.149451349150580 / 2 * fun(*var + (i - 0.865063366688984 / 2) * QMATHDELTA);
+//            sum += 0.219086362515982 / 2 * fun(*var + (i - 0.679409568299024 / 2) * QMATHDELTA);
+//            sum += 0.269266719309996 / 2 * fun(*var + (i - 0.433395394129247 / 2) * QMATHDELTA);
+//            sum += 0.295524224714752 / 2 * fun(*var + (i - 0.148874338981631 / 2) * QMATHDELTA);
+//            sum += 0.295524224714752 / 2 * fun(*var + (i + 0.148874338981631 / 2) * QMATHDELTA);
+//            sum += 0.269266719309996 / 2 * fun(*var + (i + 0.433395394129247 / 2) * QMATHDELTA);
+//            sum += 0.219086362515982 / 2 * fun(*var + (i + 0.679409568299024 / 2) * QMATHDELTA);
+//            sum += 0.149451349150580 / 2 * fun(*var + (i + 0.865063366688984 / 2) * QMATHDELTA);
+//            sum += 0.066671344308688 / 2 * fun(*var + (i + 0.973906528517171 / 2) * QMATHDELTA);
+//        }
+//
+//        *var = up;
+//
+//        return QMATHDELTA * sum + diff * (0.125 * fun(*var - diff) + 0.375 * fun(*var - 0.6666666666666667 * diff) + 0.375 * fun(*var - 0.3333333333333333 * diff) + 0.125 * fun(*var));
+//    }
 
     double nint(double(*fun)(double), double* var, double low, double up){
         double sum = 0;
-        int i;
-        int length = (up - low) / QMATHDELTA;
-        double diff = up - low - length * QMATHDELTA;
+        const int length = (up - low) / QMATHDELTA;
+        const double diff = up - low - length * QMATHDELTA;
 
         *var = low;
 
-        for(i = 0; i < length; i+= 4){
-            sum += 0.31111111111111111 * fun(*var + i * QMATHDELTA);
-            sum += 1.42222222222222222 * fun(*var + (i + 1) * QMATHDELTA);
-            sum += 0.53333333333333333 * fun(*var + (i + 2) * QMATHDELTA);
-            sum += 1.42222222222222222 * fun(*var + (i + 3) * QMATHDELTA);
-            sum += 0.31111111111111111 * fun(*var + (i + 4) * QMATHDELTA);
+        double old1 = 0.125 * fun(*var);
+
+        for(int i = 0; i < length; i+= 1){
+            sum += old1;
+            sum += 0.375 * fun(*var + (i + 0.3333333333333333) * QMATHDELTA);
+            sum += 0.375 * fun(*var + (i + 0.6666666666666667) * QMATHDELTA);
+
+            old1 = 0.125 * fun(*var + (i + 1) * QMATHDELTA);
+
+            sum += old1;
         }
 
         *var = up;
 
-        return QMATHDELTA * sum + diff * (0.31111111111111111 * fun(*var - 4 * diff) + 1.42222222222222222 * fun(*var - 3 * diff) + 0.53333333333333333 * fun(*var - 2 * diff) + 1.42222222222222222 * fun(*var - diff) + 0.31111111111111111 * fun(*var));
+        return QMATHDELTA * sum + diff * (0.125 * fun(*var - diff) + 0.375 * fun(*var - 0.6666666666666667 * diff) + 0.375 * fun(*var - 0.3333333333333333 * diff) + 0.125 * fun(*var));
     }
 
     float nint(float(*fun)(float), float* var, float low, float up){
@@ -749,12 +803,176 @@ namespace qmath {
 
     double der6(double(*fun)(double), double* var, double point){
         *var = point;
-        return  (- 0.05 * fun(*var - QMATHDELTA) + 0.45 * fun(*var - 0.66666666666666667 * QMATHDELTA) - 2.25 * fun(*var - 0.33333333333333333 * QMATHDELTA) + 2.25 * fun(*var + 0.33333333333333333 * QMATHDELTA) - 0.45 * fun(*var + 0.66666666666666667 * QMATHDELTA) + 0.05 * fun(*var + QMATHDELTA)) / QMATHDELTA;
+        return  (- 0.002190362405 * fun(*var - QMATHDELTA) + 0.04455918434 * fun(*var - 0.55 * QMATHDELTA) - 5.22317189 * fun(*var - 0.1 * QMATHDELTA) - 1.231642585e-14 * fun(*var) + 5.22317189 * fun(*var + 0.1 * QMATHDELTA) - 0.04455918434 * fun(*var + 0.55 * QMATHDELTA) + 0.002190362405 * fun(*var + QMATHDELTA)) / QMATHDELTA;
     }
 
     float der6(float(*fun)(float), float* var, float point){
         *var = point;
-        return (- 0.05f * fun(*var - QMATHDELTA) + 0.45f * fun(*var - 0.66666667f * QMATHDELTA) - 2.25f * fun(*var - 0.33333333f * QMATHDELTA) + 2.25f * fun(*var + 0.33333333f * QMATHDELTA) - 0.45f * fun(*var + 0.66666666f * QMATHDELTA) + 0.05f * fun(*var + QMATHDELTA)) / QMATHDELTA;
+        return  (- 0.00219036f * fun(*var - QMATHDELTA) + 0.04455918f * fun(*var - 0.55f * QMATHDELTA) - 5.22317189f * fun(*var - 0.1f * QMATHDELTA) + 5.22317189f * fun(*var + 0.1f * QMATHDELTA) - 0.04455918f * fun(*var + 0.55f * QMATHDELTA) + 0.00219036f * fun(*var + QMATHDELTA)) / QMATHDELTA;
+    }
+
+    ////GLOBAL VARIABLE CALCULUS FUNCTIONS////
+
+    double gnint(double(*fun)(), double* var, double low, double up){
+        double sum = 0;
+        const int length = (up - low) / QMATHDELTA;
+        const double diff = up - low - length * QMATHDELTA;
+
+        *var = low;
+
+        double old1 = 0.125 * fun();
+
+        for(int i = 0; i < length; i+= 1){
+            sum += old1;
+
+            *var = low + (i + 0.3333333333333333) * QMATHDELTA;
+            sum += 0.375 * fun();
+
+            *var = low + (i + 0.6666666666666667) * QMATHDELTA;
+            sum += 0.375 * fun();
+
+            *var = low + (i + 1) * QMATHDELTA;
+            old1 = 0.125 * fun();
+
+            sum += old1;
+        }
+
+        sum *= QMATHDELTA;
+
+        *var = up - diff;
+        sum += diff * 0.125 * fun();
+
+        *var = up - 0.6666666666666667 * diff;
+        sum += diff * 0.375 * fun();
+
+        *var = up - 0.3333333333333333 * diff;
+        sum += diff * 0.375 * fun();
+
+        *var = up;
+        sum += diff * 0.125 * fun();
+
+        return sum;
+    }
+
+    float gnint(float(*fun)(), float* var, float low, float up){
+        float sum = 0;
+        const int length = (up - low) / QMATHDELTA;
+        const float diff = up - low - length * QMATHDELTA;
+
+        *var = low;
+
+        float old1 = 0.125f * fun();
+
+        for(int i = 0; i < length; i+= 1){
+            sum += old1;
+
+            *var = low + (i + 0.33333333f) * QMATHDELTA;
+            sum += 0.375f * fun();
+
+            *var = low + (i + 0.66666666f) * QMATHDELTA;
+            sum += 0.375f * fun();
+
+            *var = low + (i + 1) * QMATHDELTA;
+            old1 = 0.125f * fun();
+
+            sum += old1;
+        }
+
+        sum *= QMATHDELTA;
+
+        *var = up - diff;
+        sum += diff * 0.125f * fun();
+
+        *var = up - 0.66666666f * diff;
+        sum += diff * 0.375f * fun();
+
+        *var = up - 0.33333333f * diff;
+        sum += diff * 0.375f * fun();
+
+        *var = up;
+        sum += diff * 0.125f * fun();
+
+        return sum;
+    }
+
+    double gder4(double(*fun)(), double* var, double point){
+        double diff = 0;
+        *var = point - QMATHDELTA;
+        diff += 0.16666666666666667 * fun();
+
+        *var = point - 0.5 * QMATHDELTA;
+        diff -= 1.33333333333333333 * fun();
+
+        *var = point + 0.5 * QMATHDELTA;
+        diff += 1.33333333333333333 * fun();
+
+        *var = point + QMATHDELTA;
+        diff -= 0.16666666666666667 * fun();
+
+        return diff / QMATHDELTA;
+    }
+
+    float gder4(float(*fun)(), float* var, float point){
+        float diff = 0;
+        *var = point - QMATHDELTA;
+        diff += 0.16666666f * fun();
+
+        *var = point - 0.5f * QMATHDELTA;
+        diff -= 1.33333333f * fun();
+
+        *var = point + 0.5f * QMATHDELTA;
+        diff += 1.33333333f * fun();
+
+        *var = point + QMATHDELTA;
+        diff -= 0.16666666f * fun();
+
+        return diff / QMATHDELTA;
+    }
+
+    double gder6(double(*fun)(), double* var, double point){
+        double diff = 0;
+        *var = point - QMATHDELTA;
+        diff -= 0.002190362405 * fun();
+
+        *var = point - 0.55 * QMATHDELTA;
+        diff += 0.04455918434 * fun();
+
+        *var = point - 0.1 * QMATHDELTA;
+        diff -= 5.22317189 * fun();
+
+        *var = point + 0.1 * QMATHDELTA;
+        diff += 5.22317189 * fun();
+
+        *var = point + 0.55 * QMATHDELTA;
+        diff -= 0.04455918434 * fun();
+
+        *var = point + QMATHDELTA;
+        diff += 0.002190362405 * fun();
+
+        return diff / QMATHDELTA;
+    }
+
+    float gder6(float(*fun)(), float* var, float point){
+        float diff = 0;
+        *var = point - QMATHDELTA;
+        diff -= 0.00219036f * fun();
+
+        *var = point - 0.55f * QMATHDELTA;
+        diff += 0.04455918f * fun();
+
+        *var = point - 0.1 * QMATHDELTA;
+        diff -= 5.22317189f * fun();
+
+        *var = point + 0.1f * QMATHDELTA;
+        diff += 5.22317189f * fun();
+
+        *var = point + 0.55f * QMATHDELTA;
+        diff -= 0.04455918f * fun();
+
+        *var = point + QMATHDELTA;
+        diff += 0.002190362f * fun();
+
+        return diff / QMATHDELTA;
     }
 
     ////STATISTICS FUNCTIONS////

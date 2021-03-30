@@ -1,17 +1,15 @@
 
+#include "qmathlib/Constants.hpp"
+
 namespace qmath {
 
     ////SPECIAL MATH FUNCTIONS////
 
     int sign(double in);
 
-    int sign(float in);
-
     int sign(int in);
 
     double abs(double in);
-
-    float abs(float in);
 
     int abs(int in);
 
@@ -21,37 +19,21 @@ namespace qmath {
 
     double frexp(double in1, short *in2);
 
-    float frexp(float in1, int *in2);
-
-    float frexp(float in1, short *in2);
-
     ////TRIGONOMETRIC MATH FUNCTIONS////
 
     double sin(double in);
 
-    float sin(float in);
-
     double qsin(double in);
-
-    float qsin(float in);
 
     double cos(double in);
 
-    float cos(float in);
-
     double qcos(double in);
 
-    float qcos(float in);
-
     double tan(double in);
-
-    float tan(float in);
 
     double qtan(double in);
 
     double cot(double in);
-
-    float cot(float in);
 
     double qcot(double in);
 
@@ -63,27 +45,15 @@ namespace qmath {
 
     double sqrt(double in);
 
-    double qsqrt(double in);
-
     double exp(double in);
-
-    float exp(float in);
 
     double cosh(double in);
 
-    float cosh(float in);
-
     double sech(double in);
-
-    float sech(float in);
 
     double sinh(double in);
 
-    float sinh(float in);
-
     double csch(double in);
-
-    float csch(float in);
 
     double tanh(double in);
 
@@ -93,27 +63,91 @@ namespace qmath {
 
     double nint(double(*fun)(double), double* var, double low, double up);
 
-    float nint(float(*fun)(float), float* var, float low, float up);
-
     double der4(double(*fun)(double), double* var, double point);
 
-    float der4(float(*fun)(float), float* var, float point);
-
     double der6(double(*fun)(double), double* var, double point);
-
-    float der6(float(*fun)(float), float* var, float point);
 
     ////GLOBAL VARIABLE CALCULUS FUNCTIONS////
 
     double gnint(double(*fun)(), double* var, double low, double up);
 
-    float gnint(float(*fun)(), float* var, float low, float up);
-
     double gder4(double(*fun)(), double* var, double point);
 
-    float gder4(float(*fun)(), float* var, float point);
-
     double gder6(double(*fun)(), double* var, double point);
+
+}
+
+namespace qmathf{
+
+    ////SPECIAL MATH FUNCTIONS////
+
+    int sign(float in);
+
+    int sign(int in);
+
+    float abs(float in);
+
+    int abs(int in);
+
+    long long abs(long int in);
+
+    float frexp(float in1, int *in2);
+
+    float frexp(float in1, short *in2);
+
+    ////TRIGONOMETRIC MATH FUNCTIONS////
+
+    float sin(float in);
+
+    float qsin(float in);
+
+    float cos(float in);
+
+    float qcos(float in);
+
+    float tan(float in);
+
+    float qtan(float in);
+
+    float cot(float in);
+
+    float qcot(float in);
+
+    ////EXPONENTIALLY BASED FUNCTIONS////
+
+    float log(double in);
+
+    float qlog(double in);
+
+    float sqrt(float in);
+
+    float exp(float in);
+
+    float cosh(float in);
+
+    float sech(float in);
+
+    float sinh(float in);
+
+    float csch(float in);
+
+    float tanh(float in);
+
+    float coth(float in);
+
+    ////UNIVARIATE CALCULUS FUNCTIONS////
+
+    float nint(float(*fun)(float), float* var, float low, float up);
+
+    float der4(float(*fun)(float), float* var, float point);
+
+    float der6(float(*fun)(float), float* var, float point);
+
+    ////GLOBAL VARIABLE CALCULUS FUNCTIONS////
+
+    float gnint(float(*fun)(), float* var, float low, float up);
+
+    float gder4(float(*fun)(), float* var, float point);
 
     float gder6(float(*fun)(), float* var, float point);
 

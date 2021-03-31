@@ -19,6 +19,16 @@ namespace qmath {
 
     double frexp(double in1, short *in2);
 
+    double ldexp(double in1, long long in2);
+
+    int floor(double in);
+
+    int ceil(double in);
+
+    bool iseven(int in);
+
+    bool isodd(int in);
+
     ////TRIGONOMETRIC MATH FUNCTIONS////
 
     double sin(double in);
@@ -41,7 +51,11 @@ namespace qmath {
 
     double log(double in);
 
+    double log10(double in);
+
     double qlog(double in);
+
+    double qlog10(double in);
 
     double sqrt(double in);
 
@@ -58,6 +72,8 @@ namespace qmath {
     double tanh(double in);
 
     double coth(double in);
+
+    double pow(double base, double expo);
 
     ////UNIVARIATE CALCULUS FUNCTIONS////
 
@@ -91,9 +107,20 @@ namespace qmathf{
 
     long long abs(long int in);
 
-    float frexp(float in1, int *in2);
+    float frexp(double in1, int *in2);
 
-    float frexp(float in1, short *in2);
+    float frexp(double in1, short *in2);
+
+    float ldexp(float in1, long int);
+
+    int floor(float in);
+
+    int ceil(float in);
+
+    bool iseven(int in);
+
+    bool isodd(int in);
+
 
     ////TRIGONOMETRIC MATH FUNCTIONS////
 
@@ -117,7 +144,11 @@ namespace qmathf{
 
     float log(double in);
 
+    float log10(double in);
+
     float qlog(double in);
+
+    float qlog10(double in);
 
     float sqrt(float in);
 
@@ -134,6 +165,8 @@ namespace qmathf{
     float tanh(float in);
 
     float coth(float in);
+
+    float pow(double base, float expo);
 
     ////UNIVARIATE CALCULUS FUNCTIONS////
 

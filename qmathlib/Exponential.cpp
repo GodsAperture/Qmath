@@ -15,7 +15,7 @@ namespace qmath{
     }//Returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
 
     //~30% faster than std::log with the MSVC compiler
-    double qlog(const double in) {
+    double log10(const double in) {
         const int exp = ((0x7ff0000000000000 & (*(long long *) &in)) >> 52) - 1023;
         const double base = 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in)) + 1;
 
@@ -25,8 +25,32 @@ namespace qmath{
         const double base4 = base2 * base2;
         const double base8 = base4 * base4;
 
-        return exp * 0.69314718055994531 + 2 * base1 * (1 + 0.33333333333333333 * base2 + 0.2 * base4 + 0.14285714285714286 * base4 * base2 + 0.11111111111111111 * base8 + 0.090909090909090909 * base8 * base2 + 0.076923076923076923 * base8 * base4 + 0.066666666666666667 * base8 * base4 * base2 + 0.058823529411764706 * base8 * base8);
-    }//Quickly returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
+        return exp * 0.30102999566398120 + base1 * (0.86858896380650366 + 0.28952965460216789 * base2 + 0.17371779276130073 * base4 + 0.12408413768664338 * base4 * base2 + 0.096509884867389295 * base8 + 0.078962633073318514 * base8 * base2 + 0.066814535677423358 * base8 * base4 + 0.057905930920433577 * base8 * base4 * base2 + 0.051093468459206097 * base8 * base8);
+    }//Returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
+
+    //~30% faster than std::log with the MSVC compiler
+    double qlog(const double in) {
+        const int exp = ((0x7ff0000000000000 & (*(long long *) &in)) >> 52) - 1023;
+        const double base = 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in)) + 1;
+
+        const double base1 = (base - 1) / (base + 1);
+
+        const double base2 = base1 * base1;
+        const double base4 = base2 * base2;
+
+        return exp * 0.69314718055994531 + 2 * base1 * (1 + 0.33333333333333333 * base2 + 0.2 * base4 + 0.14285714285714286 * base4 * base2 + 0.11111111111111111 * base4 * base4);    }//Quickly returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
+
+    double qlog10(const double in) {
+        const int exp = ((0x7ff0000000000000 & (*(long long *) &in)) >> 52) - 1023;
+        const double base = 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in)) + 1;
+
+        const double base1 = (base - 1) / (base + 1);
+
+        const double base2 = base1 * base1;
+        const double base4 = base2 * base2;
+
+        return exp * 0.30102999566398120 + base1 * (0.86858896380650366 + 0.28952965460216789 * base2 + 0.17371779276130073 * base4 + 0.12408413768664338 * base4 * base2 + 0.096509884867389295 * base4 * base4);
+    }//Returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
 
     //~60% faster than std::sqrt with the MSVC compiler
     double sqrt(const double in){
@@ -240,6 +264,50 @@ namespace qmath{
         return (final * final + 1) / (final * final + 1);
     }
 
+    //30% faster than std::pow with the MSVC compiler
+    double pow(const double base, const double expo){
+        //Logarithm of base
+        const int exp = ((0x7ff0000000000000 & (*(long long *) &base)) >> 52) - 1023;
+        const double val = 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &base)) + 1;
+
+        const double val1 = (val - 1) / (val + 1);
+
+        const double val2 = val1 * val1;
+        const double val4 = val2 * val2;
+        const double val8 = val4 * val4;
+
+        const double exp1 = exp * 0.69314718055994531 + 2 * val1 * (1 + 0.33333333333333333 * val2 + 0.2 * val4 + 0.14285714285714286 * val4 * val2 + 0.11111111111111111 * val8 + 0.090909090909090909 * val8 * val2 + 0.076923076923076923 * val8 * val4 + 0.066666666666666667 * val8 * val4 * val2 + 0.058823529411764706 * val8 * val8);
+
+        //Exp(log(base) * expo)
+        const long int val3 = (long int) (1.4426950408889634 * exp1 * expo);
+        const double dec1 = 1.4426950408889634 * exp1 * expo - val3;
+        const double dec2 = dec1 * dec1;
+        const double dec4 = dec2 * dec2;
+
+        union doutoint{
+            long long asInt;
+            double asDou;
+        };
+
+        const long long int whoexp = (long long int) (val3 + 1023);
+        doutoint derp = {whoexp};
+        derp.asInt = whoexp << 52;
+
+        double base2 = 1 + 0.086643397569993164 * dec1 + 0.0037535391712359486 * dec2 + 0.00010840646223597965 * dec2 * dec1 + 2.3481760516671087e-6 * dec4 + 4.0690790241786021e-8 * dec4 * dec1 + 5.8759805272604408e-10 * dec4 * dec2 + 7.2730702419566347e-12 * dec4 * dec2 * dec1;
+
+        base2 *= base2;
+        base2 *= base2;
+        base2 *= base2;
+
+        bool q = 2 * (int) (((expo > 0) - (expo < 0)) * expo * 0.5);
+        bool p = (int) (((expo > 0) - (expo < 0)) * expo);
+
+        int sign = (q == p) - (q != p);
+
+        return sign * base2 * derp.asDou * (base != 0) + (base == expo) * (base == 0);
+    }
+
+
 }
 
 namespace qmathf{
@@ -258,18 +326,42 @@ namespace qmathf{
     }//Returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
 
     //~30% faster than std::log with the MSVC compiler
-    float qlog(const double in) {
+    float log10(const double in) {
         const int exp = ((0x7ff0000000000000 & (*(long long *) &in)) >> 52) - 1023;
         const double base = 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in)) + 1;
 
-        const double base1 = (base - 1) / (1 + base);
+        const double base1 = (base - 1) / (base + 1);
 
         const double base2 = base1 * base1;
         const double base4 = base2 * base2;
         const double base8 = base4 * base4;
 
-        return exp * 0.69314718055994531 + 2 * base1 * (1 + 0.33333333333333333 * base2 + 0.2 * base4);
-    }//Quickly returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
+        return exp * 0.30102999566398120 + base1 * (0.86858896380650366 + 0.28952965460216789 * base2 + 0.17371779276130073 * base4 + 0.12408413768664338 * base4 * base2 + 0.096509884867389295 * base8 + 0.078962633073318514 * base8 * base2 + 0.066814535677423358 * base8 * base4 + 0.057905930920433577 * base8 * base4 * base2 + 0.051093468459206097 * base8 * base8);
+    }//Returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
+
+    //~30% faster than std::log with the MSVC compiler
+    float qlog(const double in) {
+        const int exp = ((0x7ff0000000000000 & (*(long long *) &in)) >> 52) - 1023;
+        const double base = 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in)) + 1;
+
+        const double base1 = (base - 1) / (base + 1);
+
+        const double base2 = base1 * base1;
+        const double base4 = base2 * base2;
+
+        return exp * 0.69314718055994531 + 2 * base1 * (1 + 0.33333333333333333 * base2 + 0.2 * base4 + 0.14285714285714286 * base4 * base2 + 0.11111111111111111 * base4 * base4);    }//Quickly returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
+
+    float qlog10(const double in) {
+        const int exp = ((0x7ff0000000000000 & (*(long long *) &in)) >> 52) - 1023;
+        const double base = 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &in)) + 1;
+
+        const double base1 = (base - 1) / (base + 1);
+
+        const double base2 = base1 * base1;
+        const double base4 = base2 * base2;
+
+        return exp * 0.30102999566398120 + base1 * (0.86858896380650366 + 0.28952965460216789 * base2 + 0.17371779276130073 * base4 + 0.12408413768664338 * base4 * base2 + 0.096509884867389295 * base4 * base4);
+    }//Returns the natural logarithm of the given double whose accuracy depends entirely on the mantissa of the double.
 
     //~60% faster than std::sqrt with the MSVC compiler
     float sqrt(const float in){
@@ -479,5 +571,48 @@ namespace qmathf{
         const float final = base2 * derp.asFlo;
 
         return (final * final + 1) / (final * final - 1);
+    }
+
+    //~30% faster than std::pow with the MSVC compiler
+    float pow(const double base, const float expo) {
+        //Logarithm of base
+        const int exp = ((0x7ff0000000000000 & (*(long long *) &base)) >> 52) - 1023;
+        const double val = 2.2204460492503131e-16 * (0x000fffffffffffff & (*(long long *) &base)) + 1;
+
+        const double val1 = (val - 1) / (val + 1);
+
+        const double val2 = val1 * val1;
+        const double val4 = val2 * val2;
+        const double val8 = val4 * val4;
+
+        const double exp1 = exp * 0.69314718055994531 + 2 * val1 * (1 + 0.33333333333333333 * val2 + 0.2 * val4 + 0.14285714285714286 * val4 * val2 + 0.11111111111111111 * val8 + 0.090909090909090909 * val8 * val2 + 0.076923076923076923 * val8 * val4 + 0.066666666666666667 * val8 * val4 * val2 + 0.058823529411764706 * val8 * val8);
+
+        //Exp(log(base) * expo)
+        const long int val3 = (long int) (1.44269504f * exp1 * expo);
+        const float dec1 = 1.44269504f * exp1 * expo - val3;
+        const float dec2 = dec1 * dec1;
+        const float dec4 = dec2 * dec2;
+
+        union doutoint{
+            long long asInt;
+            float asFlo;
+        };
+
+        const long int whoexp = (long int) (val3 + 127);
+        doutoint derp = {whoexp};
+        derp.asInt = whoexp << 23;
+
+        float base2 = 1 + 0.08664339f * dec1 + 0.00375353f * dec2 + 0.00010840f * dec2 * dec1 + 2.34817605e-6f * dec4;
+
+        base2 *= base2;
+        base2 *= base2;
+        base2 *= base2;
+
+        bool q = 2 * (int) (((expo > 0) - (expo < 0)) * expo * 0.5);
+        bool p = (int) (((expo > 0) - (expo < 0)) * expo);
+
+        int sign = (q == p) - (q != p);
+
+        return sign * base2 * derp.asFlo * (base != 0) + (base == expo) * (base == 0);
     }
 };

@@ -1,6 +1,6 @@
 namespace qmath{
-//These functions are 3000x slower than the univariate variations.
-// ONLY USE FOR CONVENIENCE!!! DO NOT SPEED TEST!!!
+// These functions are 3000x faster than the univariate variations.
+// NEVER USE FOR CONVENIENCE!!! PlEASE SPEED TEST!!!
 
     double gnint(double(*fun)(), double* var, double low, double up){
         double sum = 0;
